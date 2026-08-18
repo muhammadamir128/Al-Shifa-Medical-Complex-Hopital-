@@ -1,0 +1,384 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Center the container and give it responsive side padding so page
+   content stays readable while section backgrounds span full width. */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 640px) {
+    padding-inline: 1.5rem;
+  }
+  @media (width >= 1024px) {
+    padding-inline: 2rem;
+  }
+}
+
+/* Brand green gradient (#4ADE80 → #16A34A) — for hero, CTA and
+   brand surfaces. Pair with `text-white` for headings. */
+@utility bg-brand-gradient {
+  background-image: linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-primary-deep: var(--primary-deep);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* Surfaces */
+  --background: oklch(0.99 0.005 150);
+  --foreground: oklch(0.3729 0.0306 259.73);          /* Charcoal #374151 */
+  --card: oklch(1 0 0);                               /* White    #FFFFFF */
+  --card-foreground: oklch(0.3729 0.0306 259.73);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.3729 0.0306 259.73);
+
+  /* Brand green — #16A34A, with a deeper stop for gradients */
+  --primary: oklch(0.6271 0.1699 149.21);             /* Green    #16A34A */
+  --primary-foreground: oklch(1 0 0);                 /* White    #FFFFFF */
+  --primary-deep: oklch(0.52 0.14 149);
+
+  /* Neutrals */
+  --secondary: oklch(0.96 0.012 150);
+  --secondary-foreground: oklch(0.3729 0.0306 259.73);
+  --muted: oklch(0.97 0.008 150);
+  --muted-foreground: oklch(0.551 0.0234 264.36);     /* Gray     #6B7280 */
+  --accent: oklch(0.95 0.035 150);
+  --accent-foreground: oklch(0.42 0.09 149);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.012 150);
+  --input: oklch(0.92 0.012 150);
+  --ring: oklch(0.6271 0.1699 149.21);
+
+  /* Charts */
+  --chart-1: oklch(0.6271 0.1699 149.21);
+  --chart-2: oklch(0.8003 0.1821 151.71);
+  --chart-3: oklch(0.6 0.13 195);
+  --chart-4: oklch(0.7 0.2 80);
+  --chart-5: oklch(0.65 0.2 30);
+
+  /* Sidebar */
+  --sidebar: oklch(0.99 0.006 150);
+  --sidebar-foreground: oklch(0.3729 0.0306 259.73);
+  --sidebar-primary: oklch(0.6271 0.1699 149.21);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.95 0.045 150);
+  --sidebar-accent-foreground: oklch(0.42 0.09 149);
+  --sidebar-border: oklch(0.92 0.014 150);
+  --sidebar-ring: oklch(0.6271 0.1699 149.21);
+}
+
+.dark {
+  /* Surfaces */
+  --background: oklch(0.16 0.018 260);
+  --foreground: oklch(0.96 0.006 150);
+  --card: oklch(0.2 0.02 260);
+  --card-foreground: oklch(0.96 0.006 150);
+  --popover: oklch(0.2 0.02 260);
+  --popover-foreground: oklch(0.96 0.006 150);
+
+  /* Brand green — lighter #4ADE80 for contrast on dark surfaces */
+  --primary: oklch(0.8003 0.1821 151.71);
+  --primary-foreground: oklch(0.15 0.03 150);
+  --primary-deep: oklch(0.6271 0.1699 149.21);
+
+  /* Neutrals */
+  --secondary: oklch(0.27 0.02 260);
+  --secondary-foreground: oklch(0.96 0.006 150);
+  --muted: oklch(0.27 0.02 260);
+  --muted-foreground: oklch(0.72 0.022 264);
+  --accent: oklch(0.28 0.05 150);
+  --accent-foreground: oklch(0.96 0.006 150);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.3 0.02 260);
+  --input: oklch(0.3 0.02 260);
+  --ring: oklch(0.8003 0.1821 151.71);
+
+  /* Charts */
+  --chart-1: oklch(0.8003 0.1821 151.71);
+  --chart-2: oklch(0.6271 0.1699 149.21);
+  --chart-3: oklch(0.6 0.13 195);
+  --chart-4: oklch(0.7 0.2 80);
+  --chart-5: oklch(0.65 0.2 30);
+
+  /* Sidebar */
+  --sidebar: oklch(0.18 0.02 260);
+  --sidebar-foreground: oklch(0.96 0.006 150);
+  --sidebar-primary: oklch(0.8003 0.1821 151.71);
+  --sidebar-primary-foreground: oklch(0.15 0.03 150);
+  --sidebar-accent: oklch(0.28 0.05 150);
+  --sidebar-accent-foreground: oklch(0.96 0.006 150);
+  --sidebar-border: oklch(0.3 0.02 260);
+  --sidebar-ring: oklch(0.8003 0.1821 151.71);
+}
+
+/* Unified brand theme — every role dashboard shares the same green
+   palette so the product feels consistent end to end. */
+[data-role="admin"],
+[data-role="doctor"],
+[data-role="nurse"],
+[data-role="receptionist"],
+[data-role="pharmacist"],
+[data-role="lab"],
+[data-role="patient"] {
+  --primary: oklch(0.6271 0.1699 149.21);
+  --primary-foreground: oklch(1 0 0);
+  --primary-deep: oklch(0.52 0.14 149);
+  --ring: oklch(0.6271 0.1699 149.21);
+  --sidebar-primary: oklch(0.6271 0.1699 149.21);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.95 0.045 150);
+  --sidebar-accent-foreground: oklch(0.42 0.09 149);
+  --chart-1: oklch(0.6271 0.1699 149.21);
+}
+
+.dark [data-role="admin"],
+.dark [data-role="doctor"],
+.dark [data-role="nurse"],
+.dark [data-role="receptionist"],
+.dark [data-role="pharmacist"],
+.dark [data-role="lab"],
+.dark [data-role="patient"] {
+  --primary: oklch(0.8003 0.1821 151.71);
+  --primary-foreground: oklch(0.15 0.03 150);
+  --ring: oklch(0.8003 0.1821 151.71);
+  --sidebar-primary: oklch(0.8003 0.1821 151.71);
+  --sidebar-primary-foreground: oklch(0.15 0.03 150);
+  --sidebar-ring: oklch(0.8003 0.1821 151.71);
+  --sidebar-accent: oklch(0.28 0.05 150);
+  --sidebar-accent-foreground: oklch(0.96 0.006 150);
+  --chart-1: oklch(0.8003 0.1821 151.71);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.78 0.05 150);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.66 0.09 150);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: oklch(0.4 0.02 247);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.5 0.02 247);
+}
+
+/* Sidebar scroll area styling */
+.sidebar-scroll [data-slot="scroll-area-scrollbar"] {
+  width: 8px;
+}
+
+.sidebar-scroll [data-slot="scroll-area-thumb"] {
+  background: var(--sidebar-primary);
+  opacity: 0.45;
+  border-radius: 999px;
+}
+
+.sidebar-scroll [data-slot="scroll-area-scrollbar"]:hover [data-slot="scroll-area-thumb"] {
+  opacity: 0.7;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Gentle vertical float for decorative accents */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+/* Slowly drifting aurora gradient — for hero / CTA backdrops */
+@keyframes aurora {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.bg-aurora {
+  background-size: 200% 200%;
+  animation: aurora 14s ease-in-out infinite;
+}
+
+/* Brand gradient text — deep green into light green (#16A34A → #4ADE80) */
+.text-gradient {
+  background-image: linear-gradient(120deg, #16a34a 0%, #4ade80 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Shimmer sweep — used on skeletons and accent bars */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklch, var(--primary), transparent 88%),
+    transparent
+  );
+  animation: shimmer 2.4s ease-in-out infinite;
+}
+
+/* Animated underline for nav links */
+.nav-underline {
+  position: relative;
+}
+
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.35rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.nav-underline:hover::after,
+.nav-underline[data-active="true"]::after {
+  transform: scaleX(1);
+}
+
+/* Respect reduced-motion preference globally */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .bg-aurora,
+  .animate-shimmer::after,
+  .animate-pulse-subtle {
+    animation: none !important;
+  }
+}

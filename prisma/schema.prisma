@@ -1,0 +1,462 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+// User model
+model User {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  password           String
+  name               String
+  phone              String?
+  avatar             String?
+  role               String    @default("PATIENT")
+  isActive           Boolean   @default(true)
+  emailVerified      Boolean   @default(false)
+  twoFactorEnabled   Boolean   @default(false)
+  twoFactorSecret    String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // Relations
+  patient             Patient?
+  doctor              Doctor?
+  nurse               Nurse?
+  patientAppointments Appointment[]   @relation("PatientAppointments")
+  prescriptions       Prescription[]
+  notifications       Notification[]
+  auditLogs           AuditLog[]
+  sentMessages        Message[]       @relation("SentMessages")
+  receivedMessages    Message[]       @relation("ReceivedMessages")
+  fileAttachments     FileAttachment[]
+  otpTokens           OTPToken[]
+
+  @@map("users")
+}
+
+// Patient model
+model Patient {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  dateOfBirth     DateTime?
+  gender          String?
+  bloodGroup      String?
+  address         String?
+  emergencyContact String?
+  medicalHistory  String?
+  allergies       String?
+  insuranceNumber String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  appointments    Appointment[]    @relation("PatientRecords")
+  medicalRecords  MedicalRecord[]
+  vitals          Vital[]
+  labResults      LabResult[]
+
+  @@map("patients")
+}
+
+// Doctor model
+model Doctor {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  specialization String?
+  qualification  String?
+  licenseNumber  String?
+  departmentId   String?
+  department     Department? @relation(fields: [departmentId], references: [id])
+  consultationFee Float?
+  availability   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  appointments   Appointment[]  @relation("DoctorAppointments")
+  prescriptions  Prescription[]
+  labRequests    LabRequest[]
+  medicalRecords MedicalRecord[]
+  schedules      DoctorSchedule[]
+
+  @@map("doctors")
+}
+
+// Nurse model
+model Nurse {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  departmentId  String?
+  department    Department? @relation(fields: [departmentId], references: [id])
+  qualification String?
+  licenseNumber String?
+  shift         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  vitals        Vital[]
+  tasks         Task[]
+
+  @@map("nurses")
+}
+
+// Department model
+model Department {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  head        String?
+  phone       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  doctors     Doctor[]
+  nurses      Nurse[]
+
+  @@map("departments")
+}
+
+// Appointment model
+model Appointment {
+  id          String           @id @default(cuid())
+  patientId   String
+  patient     Patient          @relation("PatientRecords", fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  doctorId    String
+  doctor      Doctor           @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  userId      String?
+  user        User?            @relation("PatientAppointments", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  date        DateTime
+  startTime   String
+  endTime     String
+  status      String            @default("SCHEDULED")
+  type        String?          // CONSULTATION, FOLLOW_UP, EMERGENCY, etc.
+  reason      String?
+  notes       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Relations
+  billing     Billing?
+  prescription Prescription?
+
+  @@map("appointments")
+}
+
+// Medical Record model
+model MedicalRecord {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  doctorId    String
+  doctor      Doctor   @relation(fields: [doctorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  diagnosis   String?
+  treatment   String?
+  notes       String?
+  attachments String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("medical_records")
+}
+
+// Prescription model
+model Prescription {
+  id           String            @id @default(cuid())
+  patientId    String
+  patient      User              @relation(fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  doctorId     String
+  doctor       Doctor            @relation(fields: [doctorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  appointmentId String?          @unique
+  appointment  Appointment?      @relation(fields: [appointmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  status       String            @default("PENDING")
+  notes        String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  // Relations
+  items        PrescriptionItem[]
+
+  @@map("prescriptions")
+}
+
+// Prescription Item model
+model PrescriptionItem {
+  id             String   @id @default(cuid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  medicationId   String
+  medication     Medication   @relation(fields: [medicationId], references: [id])
+  dosage         String
+  frequency      String
+  duration       String
+  quantity       Int
+  instructions   String?
+  createdAt      DateTime @default(now())
+
+  @@map("prescription_items")
+}
+
+// Medication model (inventory)
+model Medication {
+  id              String   @id @default(cuid())
+  name            String
+  genericName     String?
+  category        String?
+  manufacturer    String?
+  description     String?
+  unitPrice       Float
+  stockQuantity   Int      @default(0)
+  reorderLevel    Int      @default(10)
+  expiryDate      DateTime?
+  batchNumber     String?
+  location        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  prescriptionItems    PrescriptionItem[]
+  inventoryTransactions InventoryTransaction[]
+
+  @@map("medications")
+}
+
+// Vital signs model
+model Vital {
+  id              String   @id @default(cuid())
+  patientId       String
+  patient         Patient  @relation(fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nurseId         String?
+  nurse           Nurse?   @relation(fields: [nurseId], references: [id])
+  temperature     Float?
+  bloodPressure   String?
+  heartRate       Int?
+  respiratoryRate Int?
+  weight          Float?
+  height          Float?
+  oxygenSaturation Float?
+  notes           String?
+  recordedAt      DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  @@map("vitals")
+}
+
+// Lab Request model
+model LabRequest {
+  id          String         @id @default(cuid())
+  patientId   String
+  doctorId    String
+  doctor      Doctor         @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  testType    String
+  description String?
+  priority    String?        // ROUTINE, URGENT, STAT
+  status      String         @default("PENDING")
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relations
+  results     LabResult[]
+
+  @@map("lab_requests")
+}
+
+// Lab Result model
+model LabResult {
+  id            String      @id @default(cuid())
+  requestId     String
+  request       LabRequest  @relation(fields: [requestId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  patientId     String
+  patient       Patient     @relation(fields: [patientId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  results       String      // JSON string for structured results
+  notes         String?
+  technician    String?
+  reportedAt    DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+
+  @@map("lab_results")
+}
+
+// Billing model
+model Billing {
+  id             String        @id @default(cuid())
+  appointmentId  String        @unique
+  appointment    Appointment   @relation(fields: [appointmentId], references: [id])
+  patientId      String?
+  totalAmount    Float
+  discount       Float         @default(0)
+  tax            Float         @default(0)
+  grandTotal     Float
+  status         String        @default("PENDING")
+  paymentMethod  String?
+  paymentDate    DateTime?
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Relations
+  items          BillingItem[]
+
+  @@map("billings")
+}
+
+// Billing Item model
+model BillingItem {
+  id          String   @id @default(cuid())
+  billingId   String
+  billing     Billing  @relation(fields: [billingId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  description String
+  quantity    Int
+  unitPrice   Float
+  total       Float
+  createdAt   DateTime @default(now())
+
+  @@map("billing_items")
+}
+
+// Notification model
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  title     String
+  message   String
+  type      String?  // APPOINTMENT, PRESCRIPTION, BILLING, etc.
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+// Task model (for nurses)
+model Task {
+  id          String   @id @default(cuid())
+  nurseId     String?
+  nurse       Nurse?   @relation(fields: [nurseId], references: [id])
+  title       String
+  description String?
+  priority    String?  // LOW, MEDIUM, HIGH
+  status      String?  // PENDING, IN_PROGRESS, COMPLETED
+  dueDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("tasks")
+}
+
+// Audit Log model
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  entity    String?
+  entityId  String?
+  details   String?  // JSON string
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+// Settings model
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// Chat Message model
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  receiverId String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  content    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@map("messages")
+}
+
+// Doctor Schedule / Availability model
+model DoctorSchedule {
+  id            String   @id @default(cuid())
+  doctorId      String
+  doctor        Doctor   @relation(fields: [doctorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  dayOfWeek     Int      // 0=Sunday … 6=Saturday
+  startTime     String   // "09:00"
+  endTime       String   // "17:00"
+  isAvailable   Boolean  @default(true)
+  slotDuration  Int      @default(30) // minutes
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([doctorId, dayOfWeek])
+  @@map("doctor_schedules")
+}
+
+// File Attachment model
+model FileAttachment {
+  id           String   @id @default(cuid())
+  uploadedBy   String
+  uploader     User     @relation(fields: [uploadedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  fileName     String
+  originalName String
+  mimeType     String
+  size         Int
+  entityType   String?  // "medical_record" | "prescription" | "lab_result"
+  entityId     String?
+  url          String
+  createdAt    DateTime @default(now())
+
+  @@map("file_attachments")
+}
+
+// Pharmacy Inventory Transaction model
+model InventoryTransaction {
+  id            String     @id @default(cuid())
+  medicationId  String
+  medication    Medication @relation(fields: [medicationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  type          String     // "IN" | "OUT" | "ADJUSTMENT" | "EXPIRED"
+  quantity      Int
+  previousStock Int
+  newStock      Int
+  reason        String?
+  performedBy   String
+  createdAt     DateTime   @default(now())
+
+  @@map("inventory_transactions")
+}
+
+// OTP Token model (email OTP + 2FA)
+model OTPToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  token     String
+  type      String   // "EMAIL_VERIFY" | "2FA" | "PASSWORD_RESET"
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("otp_tokens")
+}
