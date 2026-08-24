@@ -58,6 +58,7 @@ export default withAuth(
     return NextResponse.next()
   },
   {
+    secret: process.env.NEXTAUTH_SECRET || "hospital-management-secret-key-2024",
     callbacks: {
       authorized({ token, req }) {
         const { pathname } = req.nextUrl
