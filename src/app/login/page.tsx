@@ -74,9 +74,15 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError("Invalid email or password. Please try again.")
-        toast.error("Login failed. Please check your credentials.")
+        toast.error("Login Failed", {
+          description: "Please check your email and password credentials.",
+          duration: 4000,
+        })
       } else {
-        toast.success("Login successful! Redirecting...")
+        toast.success("Login Successful!", {
+          description: "Welcome back! Redirecting to your dashboard...",
+          duration: 4000,
+        })
         const session = await getSession()
         const roleRedirects: Record<string, string> = {
           SUPER_ADMIN: "/admin/dashboard",
