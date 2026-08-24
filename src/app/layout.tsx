@@ -20,12 +20,28 @@ export const metadata: Metadata = {
   keywords: ["Hospital", "Healthcare", "Management", "HMS", "Medical", "Patients", "Doctors"],
   authors: [{ name: "Al-Shifa Medical Complex Team" }],
   icons: {
-    icon: "/logo.svg",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+      { url: "/logo.svg", type: "image/svg+xml" },
+    ],
+    shortcut: ["/favicon.ico"],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
   openGraph: {
     title: "Al-Shifa Medical Complex",
     description: "Modern Hospital Management System",
     type: "website",
+    images: [
+      {
+        url: "/logo.png",
+        width: 512,
+        height: 512,
+        alt: "Al-Shifa Medical Complex Logo",
+      },
+    ],
   },
 };
 

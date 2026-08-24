@@ -1,7 +1,7 @@
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
-  <!-- Hospital Cross -->
-  <rect x="16" y="4" width="8" height="32" rx="2" fill="#16a34a"/>
-  <rect x="4" y="16" width="32" height="8" rx="2" fill="#16a34a"/>
+<svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Medical Cross -->
+  <rect x="216" y="80" width="80" height="352" rx="20" fill="#059669"/>
+  <rect x="80" y="216" width="352" height="80" rx="20" fill="#059669"/>
   <!-- Heart outline -->
-  <path d="M20 36C20 36 4 26 4 15C4 9 9 4 15 4C18 4 20 6 20 8C20 6 22 4 25 4C31 4 36 9 36 15C36 26 20 36 20 36Z" stroke="#16a34a" stroke-width="2" fill="none" opacity="0.3"/>
+  <path d="M256 440C256 440 80 320 80 180C80 110 135 56 205 56C240 56 256 75 256 100C256 75 272 56 307 56C377 56 432 110 432 180C432 320 256 440 256 440Z" stroke="#0284c7" stroke-width="28" stroke-opacity="0.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

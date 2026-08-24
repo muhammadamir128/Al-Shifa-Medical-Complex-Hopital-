@@ -412,11 +412,7 @@ export function DashboardSidebar({ role, collapsed = false, onToggle }: Dashboar
           )}
         >
           {collapsed ? (
-            <Link href="/" className="flex items-center justify-center">
-              <div className="h-9 w-9 rounded-xl flex items-center justify-center shadow-sm bg-primary/10">
-                <span className="text-primary font-bold text-lg">H</span>
-              </div>
-            </Link>
+            <Logo size="sm" showText={false} variant="default" />
           ) : (
             <Logo size="sm" showText={true} variant="default" />
           )}
